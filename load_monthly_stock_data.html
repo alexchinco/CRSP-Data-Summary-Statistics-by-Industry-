@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="en" xml:lang="en">
+<head>
+<title>Load Monthly Stock Data</title>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2011-11-21 20:47:24 EST"/>
+<meta name="author" content="Alex Chinco"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">Load Monthly Stock Data</h1>
+
+
+
+
+
+
+
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+
+
+
+
+
+</div>
+
+<div id="outline-container-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> Main Function Call</h3>
+<div class="outline-text-3" id="text-1-1">
+
+
+
+
+
+<pre class="src src-R">rm(list=ls())
+
+
+<span style="color: #0000ff;">library</span>(foreign)
+<span style="color: #0000ff;">library</span>(reshape)
+<span style="color: #0000ff;">library</span>(plyr)
+<span style="color: #0000ff;">library</span>(matlab)
+set.seed(12345)
+
+
+<span style="color: #0000ff;">library</span>(foreach)
+<span style="color: #0000ff;">library</span>(doMC)
+registerDoMC(2)
+
+
+<span style="color: #0000ff;">source</span>(<span style="color: #00ffff;">"load_monthly_stock_data.R"</span>)
+load_market_data()
+load_fama_french_factors()
+load_momentum_factor()
+
+<span style="color: #ff0000;">for</span> (rp <span style="color: #ff0000;">in</span> seq(1,6)) {
+  load_firm_data(ranking_period = rp, holding_period = 1)
+}
+</pre>
+
+
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Helper Functions</h2>
+<div class="outline-text-2" id="text-2">
+
+
+
+
+
+</div>
+
+<div id="outline-container-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Format Dates</h3>
+<div class="outline-text-3" id="text-2-1">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">format_dates</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(data, 
+                         name, 
+                         format       = <span style="color: #00ffff;">"YYYYMMDD"</span>, 
+                         out_names    = c(<span style="color: #00ffff;">"t"</span>,<span style="color: #00ffff;">"n"</span>)
+                         ) 
+{
+
+
+  data[, name] <span style="color: #0000ff;">&lt;-</span> as.numeric(as.character(data[, name]))
+
+
+  <span style="color: #ff0000;">if</span> (format == <span style="color: #00ffff;">"YYYYMMDD"</span>) {  
+    year  <span style="color: #0000ff;">&lt;-</span> floor(data[, name] / 10000)
+    month <span style="color: #0000ff;">&lt;-</span> floor((data[, name] - year * 10000) / 100)   
+  } <span style="color: #ff0000;">else</span> <span style="color: #ff0000;">if</span> (format == <span style="color: #00ffff;">"YYYYMM"</span>) {
+    year  <span style="color: #0000ff;">&lt;-</span> floor(data[, name] / 100)
+    month <span style="color: #0000ff;">&lt;-</span> floor(data[, name] - year * 100)
+  }
+
+
+  data[, out_names[1]] <span style="color: #0000ff;">&lt;-</span> year + (month - 1) / 12
+  data[, out_names[2]] <span style="color: #0000ff;">&lt;-</span> (year - 1960) * 12 + month
+
+
+  <span style="color: #ff0000;">return</span>(data)
+
+
+}
+</pre>
+
+
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> Print Data Frame Summaries</h3>
+<div class="outline-text-3" id="text-2-2">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">print_df_summary</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(data, 
+                             text
+                             ) 
+{
+
+
+  <span style="color: #ff0000;">for</span> (i <span style="color: #ff0000;">in</span> 1:10) {
+    print(<span style="color: #00ffff;">"                                                  "</span>)
+  }
+  <span style="color: #ff0000;">for</span> (i <span style="color: #ff0000;">in</span> 1:3) {
+    print(<span style="color: #00ffff;">"=================================================="</span>)
+  }
+
+
+  print(text)
+  print(dim(data))
+  print(head(data))
+  print(summary(data))
+  print(apply(data,2,sd,na.rm=<span style="color: #ffff00;">TRUE</span>))
+
+
+  <span style="color: #ff0000;">for</span> (i <span style="color: #ff0000;">in</span> 1:3) {
+    print(<span style="color: #00ffff;">"=================================================="</span>)
+  }
+
+
+}
+</pre>
+
+
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Load Aggregate Data</h2>
+<div class="outline-text-2" id="text-3">
+
+
+
+
+
+
+</div>
+
+<div id="outline-container-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> Market Data</h3>
+<div class="outline-text-3" id="text-3-1">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">load_market_data</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(tMin = 1988, 
+                             tMax = 2010
+                             ) 
+{
+
+
+
+  FILE                <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"F-F_Research_Data_Factors.txt"</span>
+  data.raw            <span style="color: #0000ff;">&lt;-</span> read.csv(FILE, 
+                                  stringsAsFactors    = <span style="color: #ffff00;">FALSE</span>, 
+                                  sep                 = <span style="color: #00ffff;">" "</span>,
+                                  header              = <span style="color: #ffff00;">FALSE</span>
+                                  )
+  names(data.raw)     <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"t"</span>, <span style="color: #00ffff;">"rme"</span>, <span style="color: #00ffff;">"smb"</span>, <span style="color: #00ffff;">"hml"</span>, <span style="color: #00ffff;">"rf"</span>)
+  data.raw            <span style="color: #0000ff;">&lt;-</span> data.raw[,c(<span style="color: #00ffff;">"t"</span>,<span style="color: #00ffff;">"rme"</span>,<span style="color: #00ffff;">"rf"</span>)]
+  data.raw            <span style="color: #0000ff;">&lt;-</span> format_dates(data.raw, <span style="color: #00ffff;">"t"</span>, format = <span style="color: #00ffff;">"YYYYMM"</span>)
+  data.raw            <span style="color: #0000ff;">&lt;-</span> data.raw[(data.raw$t &gt;= tMin) &amp; (data.raw$t &lt; tMax), ]
+  print_df_summary(data.raw, <span style="color: #00ffff;">"data.raw"</span>)
+
+
+
+  data.raw$rme        <span style="color: #0000ff;">&lt;-</span> data.raw$rme / 100
+  data.raw$rf         <span style="color: #0000ff;">&lt;-</span> data.raw$rf / 100
+  print_df_summary(data.raw, <span style="color: #00ffff;">"data.raw"</span>)
+
+
+
+  data.rme    <span style="color: #0000ff;">&lt;-</span> data.raw[,names(data.raw) %<span style="color: #ff0000;">in</span>% c(<span style="color: #00ffff;">"t"</span>,<span style="color: #00ffff;">"n"</span>,<span style="color: #00ffff;">"rme"</span>)]
+  data.rf     <span style="color: #0000ff;">&lt;-</span> data.raw[,names(data.raw) %<span style="color: #ff0000;">in</span>% c(<span style="color: #00ffff;">"t"</span>,<span style="color: #00ffff;">"n"</span>,<span style="color: #00ffff;">"rf"</span>)]
+
+
+
+  save(data.rme, 
+       data.rf, 
+       file = paste(<span style="color: #00ffff;">"market_data_"</span>, tMin, <span style="color: #00ffff;">"to"</span>, tMax, <span style="color: #00ffff;">".Rdata"</span>, sep=<span style="color: #00ffff;">""</span>)
+       )  
+
+
+
+}
+</pre>
+
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> Load Fama and French (1993) Factors</h3>
+<div class="outline-text-3" id="text-3-2">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">load_fama_french_factors</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(tMin = 1988, 
+                                     tMax = 2010
+                                     ) 
+{
+
+
+
+  FILE                <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"F-F_Research_Data_Factors.txt"</span>
+  data.raw            <span style="color: #0000ff;">&lt;-</span> read.csv(FILE, 
+                                  stringsAsFactors    = <span style="color: #ffff00;">FALSE</span>, 
+                                  sep                 = <span style="color: #00ffff;">" "</span>,
+                                  header              = <span style="color: #ffff00;">FALSE</span>
+                                  )
+  names(data.raw)     <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"t"</span>, <span style="color: #00ffff;">"rme"</span>, <span style="color: #00ffff;">"smb"</span>, <span style="color: #00ffff;">"hml"</span>, <span style="color: #00ffff;">"rf"</span>)
+  data.raw            <span style="color: #0000ff;">&lt;-</span> data.raw[,c(<span style="color: #00ffff;">"t"</span>,<span style="color: #00ffff;">"smb"</span>,<span style="color: #00ffff;">"hml"</span>)]
+  data.raw            <span style="color: #0000ff;">&lt;-</span> format_dates(data.raw, <span style="color: #00ffff;">"t"</span>, format = <span style="color: #00ffff;">"YYYYMM"</span>)
+  data.raw            <span style="color: #0000ff;">&lt;-</span> data.raw[(data.raw$t &gt;= tMin) &amp; (data.raw$t &lt; tMax), ]
+  print_df_summary(data.raw, <span style="color: #00ffff;">"data.raw"</span>)
+
+
+
+  data.raw$smb        <span style="color: #0000ff;">&lt;-</span> data.raw$smb/100
+  data.raw$hml        <span style="color: #0000ff;">&lt;-</span> data.raw$hml/100
+  print_df_summary(data.raw, <span style="color: #00ffff;">"data.raw"</span>)
+
+
+
+  data.smb    <span style="color: #0000ff;">&lt;-</span> data.raw[,names(data.raw) %<span style="color: #ff0000;">in</span>% c(<span style="color: #00ffff;">"t"</span>,<span style="color: #00ffff;">"n"</span>,<span style="color: #00ffff;">"smb"</span>)]
+  data.hml    <span style="color: #0000ff;">&lt;-</span> data.raw[,names(data.raw) %<span style="color: #ff0000;">in</span>% c(<span style="color: #00ffff;">"t"</span>,<span style="color: #00ffff;">"n"</span>,<span style="color: #00ffff;">"hml"</span>)]
+
+
+
+  save(data.smb, 
+       data.hml, 
+       file = paste(<span style="color: #00ffff;">"fama_french_factors_"</span>, tMin, <span style="color: #00ffff;">"to"</span>, tMax, <span style="color: #00ffff;">".Rdata"</span>, sep=<span style="color: #00ffff;">""</span>)
+       )  
+
+}
+</pre>
+
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-3-3" class="outline-3">
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> Load Momentum Factor</h3>
+<div class="outline-text-3" id="text-3-3">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">load_momentum_factor</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(tMin = 1988, 
+                                 tMax = 2010
+                                 ) 
+{
+
+
+
+  FILE                <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"F-F_Momentum_Factor.txt"</span>
+  data.raw            <span style="color: #0000ff;">&lt;-</span> read.csv(FILE, 
+                                  sep                 = <span style="color: #00ffff;">" "</span>, 
+                                  stringsAsFactors    = <span style="color: #ffff00;">FALSE</span>, 
+                                  header              = <span style="color: #ffff00;">TRUE</span>
+                                  )
+  names(data.raw)     <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"t"</span>, <span style="color: #00ffff;">"rmom"</span>)
+  data.raw            <span style="color: #0000ff;">&lt;-</span> format_dates(data.raw, <span style="color: #00ffff;">"t"</span>, format = <span style="color: #00ffff;">"YYYYMM"</span>)
+  data.raw            <span style="color: #0000ff;">&lt;-</span> data.raw[(data.raw$t &gt;= tMin) &amp; (data.raw$t &lt; tMax), ]
+  print_df_summary(data.raw, <span style="color: #00ffff;">"data.raw"</span>)
+
+
+
+  data.raw$rmom       <span style="color: #0000ff;">&lt;-</span> data.raw$rmom/100
+  print_df_summary(data.raw, <span style="color: #00ffff;">"data.raw"</span>)
+
+
+
+  data.rmom   <span style="color: #0000ff;">&lt;-</span> data.raw[,names(data.raw) %<span style="color: #ff0000;">in</span>% c(<span style="color: #00ffff;">"t"</span>,<span style="color: #00ffff;">"n"</span>,<span style="color: #00ffff;">"rmom"</span>)]
+
+
+
+  save(data.rmom, 
+       file = paste(<span style="color: #00ffff;">"momentum_factor_"</span>, tMin, <span style="color: #00ffff;">"to"</span>, tMax, <span style="color: #00ffff;">".Rdata"</span>, sep=<span style="color: #00ffff;">""</span>)
+       )  
+
+
+
+}
+</pre>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Load Firm Data</h2>
+<div class="outline-text-2" id="text-4">
+
+
+
+
+
+
+</div>
+
+<div id="outline-container-4-1" class="outline-3">
+<h3 id="sec-4-1"><span class="section-number-3">4.1</span> Clean Firm Data</h3>
+<div class="outline-text-3" id="text-4-1">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">clean_firm_data</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(data.raw) 
+{
+
+
+  data.raw    <span style="color: #0000ff;">&lt;-</span> data.raw[data.raw$exch %<span style="color: #ff0000;">in</span>% c(1,2,3), ]    
+
+
+  data.raw$status     <span style="color: #0000ff;">&lt;-</span> as.character(data.raw$status)
+  data.raw            <span style="color: #0000ff;">&lt;-</span> data.raw[data.raw$status == <span style="color: #00ffff;">"A"</span>,]
+
+
+  data.raw                            <span style="color: #0000ff;">&lt;-</span> data.raw[is.na(data.raw$p) == <span style="color: #ffff00;">FALSE</span>, ]
+  data.raw[data.raw$p &lt; 0, ]$p        <span style="color: #0000ff;">&lt;-</span> - data.raw[data.raw$p &lt; 0, ]$p
+
+
+  data.raw$r  <span style="color: #0000ff;">&lt;-</span> as.numeric(as.character(data.raw$r))
+  data.raw    <span style="color: #0000ff;">&lt;-</span> data.raw[is.na(data.raw$r) == <span style="color: #ffff00;">FALSE</span>, ]    
+
+
+  data.raw    <span style="color: #0000ff;">&lt;-</span> data.raw[is.na(data.raw$shares) == <span style="color: #ffff00;">FALSE</span>, ]
+  data.raw    <span style="color: #0000ff;">&lt;-</span> data.raw[is.na(data.raw$sic) == <span style="color: #ffff00;">FALSE</span>, ]
+
+
+  data.raw$mcap       <span style="color: #0000ff;">&lt;-</span> data.raw$shares * data.raw$p    
+  data.clean          <span style="color: #0000ff;">&lt;-</span> data.raw[,names(data.raw) %<span style="color: #ff0000;">in</span>% c(<span style="color: #00ffff;">'a'</span>,<span style="color: #00ffff;">'t'</span>,<span style="color: #00ffff;">'n'</span>,<span style="color: #00ffff;">'r'</span>,<span style="color: #00ffff;">'p'</span>,<span style="color: #00ffff;">'mcap'</span>,<span style="color: #00ffff;">'sic'</span>)]
+
+
+  print_df_summary(data.clean, <span style="color: #00ffff;">"data.clean"</span>)
+  <span style="color: #ff0000;">return</span>(data.clean)
+
+
+}
+</pre>
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4-2" class="outline-3">
+<h3 id="sec-4-2"><span class="section-number-3">4.2</span> Identify Big Firms</h3>
+<div class="outline-text-3" id="text-4-2">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">identify_big_firms</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(data.mcap) 
+{
+
+
+  data.q25    <span style="color: #0000ff;">&lt;-</span> ddply(data.mcap, 
+                       c(<span style="color: #00ffff;">"n"</span>),
+                       <span style="color: #ff0000;">function</span>(X)quantile(X$mcap, prob = 0.25)
+                       )
+  names(data.q25)     <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"n"</span>, <span style="color: #00ffff;">"q25"</span>)
+
+
+  data.mcap           <span style="color: #0000ff;">&lt;-</span> merge(data.mcap, data.q25, by = c(<span style="color: #00ffff;">"n"</span>))    
+  data.mcap           <span style="color: #0000ff;">&lt;-</span> data.mcap[order(data.mcap$a, data.mcap$n), ]
+
+
+  data.mcap$is_big <span style="color: #0000ff;">&lt;-</span> <span style="color: #ffff00;">NA</span>
+  data.mcap[data.mcap$mcap &lt;= data.mcap$q25, ]$is_big       <span style="color: #0000ff;">&lt;-</span> 0
+  data.mcap[data.mcap$mcap &gt; data.mcap$q25, ]$is_big        <span style="color: #0000ff;">&lt;-</span> 1 
+
+
+  print_df_summary(data.mcap, <span style="color: #00ffff;">"data.mcap"</span>)
+  <span style="color: #ff0000;">return</span>(data.mcap)
+
+
+}
+</pre>
+
+
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4-3" class="outline-3">
+<h3 id="sec-4-3"><span class="section-number-3">4.3</span> Balance Panel</h3>
+<div class="outline-text-3" id="text-4-3">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">balance_panel</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(data.r,
+                          ranking_period, 
+                          holding_period
+                          ) 
+{
+
+
+  firms       <span style="color: #0000ff;">&lt;-</span> sort(unique(data.r$a))
+  nFirms      <span style="color: #0000ff;">&lt;-</span> length(firms)
+
+
+  data.is_bal <span style="color: #0000ff;">&lt;-</span> foreach(j = 1:nFirms, .combine = <span style="color: #00ffff;">"rbind"</span>) %dopar% {      
+    panel <span style="color: #0000ff;">&lt;-</span> data.r[data.r$a == firms[j], ]
+    panel$is_bal      <span style="color: #0000ff;">&lt;-</span> 0
+    nLen              <span style="color: #0000ff;">&lt;-</span> length(panel$n)
+    <span style="color: #ff0000;">for</span> (k <span style="color: #ff0000;">in</span> 1:nLen) {
+      try({
+        m                     <span style="color: #0000ff;">&lt;-</span> panel$n[k]
+        rank_period_full      <span style="color: #0000ff;">&lt;-</span> as.logical(length(panel[panel$n %<span style="color: #ff0000;">in</span>% seq(m-ranking_period,m-1), ]$r) == ranking_period)
+        hold_period_full      <span style="color: #0000ff;">&lt;-</span> as.logical(length(panel[panel$n %<span style="color: #ff0000;">in</span>% seq(m,m+holding_period-1), ]$r) == holding_period)
+        <span style="color: #ff0000;">if</span> (rank_period_full == <span style="color: #ffff00;">TRUE</span> &amp; hold_period_full == <span style="color: #ffff00;">TRUE</span>) {
+          panel$is_bal[k] <span style="color: #0000ff;">&lt;-</span> 1
+        }
+      })
+    }
+    panel <span style="color: #0000ff;">&lt;-</span> panel[, names(panel) %<span style="color: #ff0000;">in</span>% c(<span style="color: #00ffff;">"a"</span>,<span style="color: #00ffff;">"n"</span>,<span style="color: #00ffff;">"is_bal"</span>)]
+    <span style="color: #ff0000;">if</span> (j %<span style="color: #ff0000;">in</span>% round(seq(1, nFirms, length = 101))) {
+      print(signif(j/nFirms * 100, 3))
+    }
+    <span style="color: #ff0000;">return</span>(panel)
+  }
+
+
+  print_df_summary(data.is_bal, <span style="color: #00ffff;">"data.is_bal"</span>)
+  <span style="color: #ff0000;">return</span>(data.is_bal)
+
+
+}
+</pre>
+
+
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4-4" class="outline-3">
+<h3 id="sec-4-4"><span class="section-number-3">4.4</span> Load Firm Data</h3>
+<div class="outline-text-3" id="text-4-4">
+
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">load_firm_data</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(ranking_period, 
+                           holding_period, 
+                           tMin = 1988, 
+                           tMax = 2010
+                           ) 
+{
+
+
+  FILE                <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"crsp_monthly_data.csv"</span>
+  data.raw            <span style="color: #0000ff;">&lt;-</span> read.csv(FILE, stringsAsFactors = <span style="color: #ffff00;">FALSE</span>)
+  data.raw            <span style="color: #0000ff;">&lt;-</span> data.raw[, c(<span style="color: #00ffff;">"DATE"</span>, <span style="color: #00ffff;">"PERMNO"</span>, <span style="color: #00ffff;">"EXCHCD"</span>, <span style="color: #00ffff;">"SICCD"</span>, <span style="color: #00ffff;">"TRDSTAT"</span>, <span style="color: #00ffff;">"SHROUT"</span>, <span style="color: #00ffff;">"PRC"</span>, <span style="color: #00ffff;">"RET"</span>)]
+  names(data.raw)     <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"t"</span>, <span style="color: #00ffff;">"a"</span>, <span style="color: #00ffff;">"exch"</span>, <span style="color: #00ffff;">"sic"</span>, <span style="color: #00ffff;">"status"</span>, <span style="color: #00ffff;">"shares"</span>, <span style="color: #00ffff;">"p"</span>, <span style="color: #00ffff;">"r"</span>)
+  data.raw            <span style="color: #0000ff;">&lt;-</span> format_dates(data.raw, <span style="color: #00ffff;">"t"</span>)
+  data.raw            <span style="color: #0000ff;">&lt;-</span> data.raw[(data.raw$t &gt;= tMin) &amp; (data.raw$t &lt; tMax), ]
+  print_df_summary(data.raw, <span style="color: #00ffff;">"data.raw"</span>)
+
+
+  data.clean  <span style="color: #0000ff;">&lt;-</span> clean_firm_data(data.raw)
+
+
+  data.r      <span style="color: #0000ff;">&lt;-</span> data.clean[order(data.clean$a, data.clean$n), c(<span style="color: #00ffff;">"n"</span>,<span style="color: #00ffff;">"a"</span>,<span style="color: #00ffff;">"r"</span>)]
+  print_df_summary(data.r, <span style="color: #00ffff;">"data.r"</span>)
+
+
+  data.mcap   <span style="color: #0000ff;">&lt;-</span> data.clean[order(data.clean$a, data.clean$n), c(<span style="color: #00ffff;">"n"</span>,<span style="color: #00ffff;">"a"</span>,<span style="color: #00ffff;">"mcap"</span>)]
+  data.mcap   <span style="color: #0000ff;">&lt;-</span> identify_big_firms(data.mcap)
+
+
+  data.is_bal <span style="color: #0000ff;">&lt;-</span> balance_panel(data.r, ranking_period, holding_period)
+
+
+  save(data.r, 
+       data.mcap, 
+       data.is_bal,
+       file = paste(<span style="color: #00ffff;">"stock_data_rp"</span>, ranking_period, <span style="color: #00ffff;">"_hp"</span>, holding_period, <span style="color: #00ffff;">"_"</span>, tMin, <span style="color: #00ffff;">"to"</span>, tMax, <span style="color: #00ffff;">".Rdata"</span>, sep=<span style="color: #00ffff;">""</span>)
+       )
+
+
+}
+</pre>
+
+
+
+
+</div>
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2011-11-21 20:47:24 EST</p>
+<p class="author">Author: Alex Chinco</p>
+<p class="creator">Org version 7.7 with Emacs version 23</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
+</div>
+</body>
+</html>

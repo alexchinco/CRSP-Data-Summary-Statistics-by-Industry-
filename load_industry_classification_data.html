@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="en" xml:lang="en">
+<head>
+<title>Load Industry Classification Data</title>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2011-11-21 20:47:12 EST"/>
+<meta name="author" content="Alex Chinco"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">Load Industry Classification Data</h1>
+
+
+
+
+
+
+
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+
+
+
+</div>
+
+<div id="outline-container-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> Main Function Call</h3>
+<div class="outline-text-3" id="text-1-1">
+
+
+
+
+
+<pre class="src src-R">rm(list=ls())
+
+
+
+<span style="color: #0000ff;">library</span>(foreign)
+<span style="color: #0000ff;">library</span>(reshape)
+<span style="color: #0000ff;">library</span>(plyr)
+<span style="color: #0000ff;">library</span>(matlab)
+<span style="color: #0000ff;">library</span>(rjson)
+set.seed(12345)
+
+
+
+<span style="color: #0000ff;">source</span>(<span style="color: #00ffff;">"load_industry_classification_data.R"</span>)    
+<span style="color: #ff1493;">## </span><span style="color: #ff1493;">assign_msci_industries(file_name = "stock_data_rp1_hp1_1988to2010.Rdata") </span>
+assign_ff1988_industries(file_name = <span style="color: #00ffff;">"stock_data_rp1_hp1_1988to2010.Rdata"</span>) 
+<span style="color: #ff1493;">## </span><span style="color: #ff1493;">assign_mg1999_industries(file_name = "stock_data_rp1_hp1_1988to2010.Rdata") </span>
+</pre>
+
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Helper Functions</h2>
+<div class="outline-text-2" id="text-2">
+
+
+
+</div>
+
+<div id="outline-container-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Format Dates</h3>
+<div class="outline-text-3" id="text-2-1">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">format_dates</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(data, 
+                         name, 
+                         format = <span style="color: #00ffff;">"YYYYMMDD"</span>, 
+                         out_names = c(<span style="color: #00ffff;">"t"</span>,<span style="color: #00ffff;">"n"</span>)
+                         ) 
+{
+
+
+  data[, name] <span style="color: #0000ff;">&lt;-</span> as.numeric(as.character(data[, name]))
+
+
+  <span style="color: #ff0000;">if</span> (format == <span style="color: #00ffff;">"YYYYMMDD"</span>) {  
+    year  <span style="color: #0000ff;">&lt;-</span> floor(data[, name] / 10000)
+    month <span style="color: #0000ff;">&lt;-</span> floor((data[, name] - year * 10000) / 100)   
+  } <span style="color: #ff0000;">else</span> <span style="color: #ff0000;">if</span> (format == <span style="color: #00ffff;">"YYYYMM"</span>) {
+    year  <span style="color: #0000ff;">&lt;-</span> floor(data[, name] / 100)
+    month <span style="color: #0000ff;">&lt;-</span> floor(data[, name] - year * 100)
+  }
+
+
+  data[, out_names[1]] <span style="color: #0000ff;">&lt;-</span> year + (month - 1) / 12
+  data[, out_names[2]] <span style="color: #0000ff;">&lt;-</span> (year - 1960) * 12 + month
+
+
+  <span style="color: #ff0000;">return</span>(data)
+
+
+}
+</pre>
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> Print Data Frame Summaries</h3>
+<div class="outline-text-3" id="text-2-2">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">print_df_summary</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(data, 
+                             text
+                             ) 
+{
+
+
+  <span style="color: #ff0000;">for</span> (i <span style="color: #ff0000;">in</span> 1:10) {
+    print(<span style="color: #00ffff;">"                                                  "</span>)
+  }
+  <span style="color: #ff0000;">for</span> (i <span style="color: #ff0000;">in</span> 1:3) {
+    print(<span style="color: #00ffff;">"=================================================="</span>)
+  }
+
+
+  print(text)
+  print(dim(data))
+  print(head(data))
+  print(summary(data))
+  print(apply(data,2,sd,na.rm=<span style="color: #ffff00;">TRUE</span>))
+
+
+  <span style="color: #ff0000;">for</span> (i <span style="color: #ff0000;">in</span> 1:3) {
+    print(<span style="color: #00ffff;">"=================================================="</span>)
+  }
+
+
+}
+</pre>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Load Industry Dictionaries</h2>
+<div class="outline-text-2" id="text-3">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">load_industry_dictionaries</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(tMin = 1988, 
+                                       tMax = 2010
+                                       ) 
+{
+
+
+
+  FILE                                        <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"crsp_compustat_link_table.csv"</span>
+  data.msci                                   <span style="color: #0000ff;">&lt;-</span> read.csv(FILE, stringsAsFactors = <span style="color: #ffff00;">FALSE</span>)
+  data.msci                                   <span style="color: #0000ff;">&lt;-</span> data.msci[,c(<span style="color: #00ffff;">"lpermno"</span>, <span style="color: #00ffff;">"linkdt"</span>, <span style="color: #00ffff;">"linkenddt"</span>, <span style="color: #00ffff;">"CIK"</span>, <span style="color: #00ffff;">"SIC"</span>, <span style="color: #00ffff;">"NAICS"</span>, <span style="color: #00ffff;">"GSECTOR"</span>, <span style="color: #00ffff;">"GGROUP"</span>, <span style="color: #00ffff;">"GIND"</span>, <span style="color: #00ffff;">"GSUBIND"</span>)]
+  names(data.msci)                            <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"a"</span>, <span style="color: #00ffff;">"t.start"</span>, <span style="color: #00ffff;">"t.end"</span>, <span style="color: #00ffff;">"cik"</span>, <span style="color: #00ffff;">"sic"</span>, <span style="color: #00ffff;">"naics"</span>, <span style="color: #00ffff;">"g_sec"</span>, <span style="color: #00ffff;">"g_group"</span>, <span style="color: #00ffff;">"g_ind"</span>, <span style="color: #00ffff;">"g_subind"</span>)
+  data.msci                                   <span style="color: #0000ff;">&lt;-</span> data.msci[order(data.msci$a, data.msci$t.start), ]
+  data.msci[data.msci$t.end == <span style="color: #00ffff;">"E"</span>, ]$t.end   <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"20100101"</span>
+  data.msci                                   <span style="color: #0000ff;">&lt;-</span> format_dates(data.msci, 
+                                                              <span style="color: #00ffff;">"t.start"</span>, 
+                                                              out_names = c(<span style="color: #00ffff;">"t.start"</span>, <span style="color: #00ffff;">"n.start"</span>)
+                                                              )
+  data.msci                                   <span style="color: #0000ff;">&lt;-</span> format_dates(data.msci, 
+                                                              <span style="color: #00ffff;">"t.end"</span>, 
+                                                              out_names = c(<span style="color: #00ffff;">"t.end"</span>, <span style="color: #00ffff;">"n.end"</span>)
+                                                              )
+  data.msci                                   <span style="color: #0000ff;">&lt;-</span> data.msci[order(data.msci$a, data.msci$n.start), ]
+  print_df_summary(data.msci, <span style="color: #00ffff;">"data.msci"</span>)
+
+
+
+  FILE        <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"industries.json"</span>
+  dict.temp   <span style="color: #0000ff;">&lt;-</span> fromJSON(file = FILE)
+  dict.ff1988 <span style="color: #0000ff;">&lt;-</span> dict.temp[[1]]  
+  dict.mg1999 <span style="color: #0000ff;">&lt;-</span> dict.temp[[2]]
+  print(head(dict.mg1999))
+
+
+
+  industry_dictionaries <span style="color: #0000ff;">&lt;-</span> list(data.msci, 
+                                dict.ff1988, 
+                                dict.mg1999
+                                )
+
+
+
+  <span style="color: #ff0000;">return</span>(industry_dictionaries)
+
+
+
+}
+</pre>
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Assign Industry Codes</h2>
+<div class="outline-text-2" id="text-4">
+
+
+
+
+</div>
+
+<div id="outline-container-4-1" class="outline-3">
+<h3 id="sec-4-1"><span class="section-number-3">4.1</span> MSCI Industry Codes</h3>
+<div class="outline-text-3" id="text-4-1">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">assign_msci_industries</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(file_name = <span style="color: #00ffff;">"demo"</span>) 
+{
+
+
+  industry_dictionaries       <span style="color: #0000ff;">&lt;-</span> load_industry_dictionaries()
+  dict                        <span style="color: #0000ff;">&lt;-</span> industry_dictionaries[[1]]
+
+
+  <span style="color: #ff0000;">if</span> (file_name == <span style="color: #00ffff;">"demo"</span>) {
+    FILE      <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"crsp_monthly_data.csv"</span>
+    data      <span style="color: #0000ff;">&lt;-</span> read.csv(FILE, 
+                          nrows = 10000,
+                          stringsAsFactors = <span style="color: #ffff00;">FALSE</span>
+                          )
+    print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+    data              <span style="color: #0000ff;">&lt;-</span> data[, c(<span style="color: #00ffff;">"PERMNO"</span>,<span style="color: #00ffff;">"DATE"</span>,<span style="color: #00ffff;">"SICCD"</span>)]
+    names(data)       <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"a"</span>, <span style="color: #00ffff;">"t"</span>, <span style="color: #00ffff;">"sic_0"</span>)
+    data              <span style="color: #0000ff;">&lt;-</span> format_dates(data, <span style="color: #00ffff;">"t"</span>)
+    data              <span style="color: #0000ff;">&lt;-</span> data[is.na(data$sic_0) == <span style="color: #ffff00;">FALSE</span>, ]
+    print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+    data.msci         <span style="color: #0000ff;">&lt;-</span> data
+  } <span style="color: #ff0000;">else</span> {
+    load(file_name)
+    load(<span style="color: #00ffff;">"market_data_1988to2010.Rdata"</span>)
+    data      <span style="color: #0000ff;">&lt;-</span> merge(data.r, data.rf, by = c(<span style="color: #00ffff;">"n"</span>), all.x = <span style="color: #ffff00;">TRUE</span>)
+    print_df_summary(data, <span style="color: #00ffff;">"data"</span>)      
+    data.msci <span style="color: #0000ff;">&lt;-</span> data[,c(<span style="color: #00ffff;">"a"</span>,<span style="color: #00ffff;">"t"</span>)]
+  }
+
+
+  dict                <span style="color: #0000ff;">&lt;-</span> dict[dict$a %<span style="color: #ff0000;">in</span>% sort(unique(data.msci$a)), ]
+  num_rows            <span style="color: #0000ff;">&lt;-</span> dim(dict)[1]
+  data.msci$msci      <span style="color: #0000ff;">&lt;-</span> <span style="color: #ffff00;">NA</span>
+  data.msci$sic       <span style="color: #0000ff;">&lt;-</span> <span style="color: #ffff00;">NA</span>
+  print_df_summary(data.msci, <span style="color: #00ffff;">"data.msci"</span>)      
+
+
+  <span style="color: #ff0000;">for</span> (r <span style="color: #ff0000;">in</span> 1:num_rows) {
+    a         <span style="color: #0000ff;">&lt;-</span> dict$a[r]
+    tMin      <span style="color: #0000ff;">&lt;-</span> dict$t.start[r]
+    tMax      <span style="color: #0000ff;">&lt;-</span> dict$t.end[r]
+    msci      <span style="color: #0000ff;">&lt;-</span> dict$g_subind[r]
+    sic       <span style="color: #0000ff;">&lt;-</span> dict$sic[r]
+    try({ 
+      data.msci[(data.msci$a == a) &amp; (data.msci$t &gt;= tMin) &amp; (data.msci$t &lt;= tMax), ]$msci <span style="color: #0000ff;">&lt;-</span> msci
+      data.msci[(data.msci$a == a) &amp; (data.msci$t &gt;= tMin) &amp; (data.msci$t &lt;= tMax), ]$sic  <span style="color: #0000ff;">&lt;-</span> sic
+    }, silent = <span style="color: #ffff00;">TRUE</span>)      
+    <span style="color: #ff0000;">if</span> (r %<span style="color: #ff0000;">in</span>% round(seq(1, num_rows, length = 101))) {
+      print(round(r/num_rows * 100))
+    }
+  }
+  print_df_summary(data.msci, <span style="color: #00ffff;">"data.msci"</span>)      
+
+
+  <span style="color: #ff0000;">if</span> (file_name == <span style="color: #00ffff;">"demo"</span>) {
+    print(data.msci[1:250,])
+    save(data.msci, 
+         file = <span style="color: #00ffff;">"msci_industry_dict_demo.Rdata"</span>
+         )
+  } <span style="color: #ff0000;">else</span> {
+    print(data.msci[1:250,])
+    save(data.msci, 
+         file = <span style="color: #00ffff;">"msci_industry_dict.Rdata"</span>
+         )
+  }
+
+
+}
+</pre>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4-2" class="outline-3">
+<h3 id="sec-4-2"><span class="section-number-3">4.2</span> Fama and French (1988) Industry Codes</h3>
+<div class="outline-text-3" id="text-4-2">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">assign_ff1988_industries</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(file_name = <span style="color: #00ffff;">"demo"</span>) 
+{
+
+
+  industry_dictionaries       <span style="color: #0000ff;">&lt;-</span> load_industry_dictionaries()
+  dict                        <span style="color: #0000ff;">&lt;-</span> industry_dictionaries[[2]]
+
+
+  <span style="color: #ff0000;">if</span> (file_name == <span style="color: #00ffff;">"demo"</span>) {
+    FILE      <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"crsp_monthly_data.csv"</span>
+    data      <span style="color: #0000ff;">&lt;-</span> read.csv(FILE, 
+                          nrows = 10000,
+                          stringsAsFactors = <span style="color: #ffff00;">FALSE</span>
+                          )
+    data      <span style="color: #0000ff;">&lt;-</span> data[, c(<span style="color: #00ffff;">"PERMNO"</span>,<span style="color: #00ffff;">"SICCD"</span>)]    
+    data      <span style="color: #0000ff;">&lt;-</span> data[is.na(data$SICCD) == <span style="color: #ffff00;">FALSE</span>, ]
+    print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+  } <span style="color: #ff0000;">else</span> {
+    load(file_name)
+    FILE              <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"crsp_monthly_data.csv"</span>
+    data              <span style="color: #0000ff;">&lt;-</span> read.csv(FILE, 
+                                  stringsAsFactors = <span style="color: #ffff00;">FALSE</span>
+                                  )
+    data              <span style="color: #0000ff;">&lt;-</span> data[, c(<span style="color: #00ffff;">"PERMNO"</span>,<span style="color: #00ffff;">"SICCD"</span>)]    
+    data              <span style="color: #0000ff;">&lt;-</span> data[is.na(data$SICCD) == <span style="color: #ffff00;">FALSE</span>, ]
+    data              <span style="color: #0000ff;">&lt;-</span> ddply(data, 
+                               c(<span style="color: #00ffff;">"PERMNO"</span>), 
+                               <span style="color: #ff0000;">function</span>(X)X$SICCD[1]
+                               )
+    names(data)       <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"a"</span>, <span style="color: #00ffff;">"sic"</span>)
+    data              <span style="color: #0000ff;">&lt;-</span> data[data$a %<span style="color: #ff0000;">in</span>% unique(data.is_bal$a), ]
+    print_df_summary(data, <span style="color: #00ffff;">"data"</span>)  
+  }
+
+
+  data.ff1988         <span style="color: #0000ff;">&lt;-</span> data
+  data.ff1988$ind     <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"Other"</span>
+  data.ff1988$sub_ind <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"Other"</span>
+  print_df_summary(data.ff1988, <span style="color: #00ffff;">"data.ff1988"</span>)
+
+
+  <span style="color: #ff0000;">for</span> (i <span style="color: #ff0000;">in</span> 1:length(dict)) {
+    print(names(dict[[i]]))
+    <span style="color: #ff0000;">for</span> (k <span style="color: #ff0000;">in</span> 1:length(dict[[i]])) {
+      a       <span style="color: #0000ff;">&lt;-</span> dict[[i]][[k]]$start
+      b       <span style="color: #0000ff;">&lt;-</span> dict[[i]][[k]]$end
+      try({ 
+        data.ff1988[data.ff1988$sic %<span style="color: #ff0000;">in</span>% seq(a,b), ]$ind      <span style="color: #0000ff;">&lt;-</span> names(dict)[i] 
+        data.ff1988[data.ff1988$sic %<span style="color: #ff0000;">in</span>% seq(a,b), ]$sub_ind  <span style="color: #0000ff;">&lt;-</span> names(dict[[i]])[k] 
+      }, silent = <span style="color: #ffff00;">TRUE</span>)
+    }
+  }
+  print_df_summary(data.ff1988, <span style="color: #00ffff;">"data.ff1988"</span>)
+
+
+  <span style="color: #ff0000;">if</span> (file_name == <span style="color: #00ffff;">"demo"</span>) {
+    print(data.ff1988[1:250,])
+    save(data.ff1988, 
+         file = <span style="color: #00ffff;">"ff1988_industry_dict_demo.Rdata"</span>
+         )
+  } <span style="color: #ff0000;">else</span> {
+    print(data.ff1988[1:250,])
+    save(data.ff1988, 
+         file = <span style="color: #00ffff;">"ff1988_industry_dict.Rdata"</span>
+         )
+  }
+
+
+}
+</pre>
+
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4-3" class="outline-3">
+<h3 id="sec-4-3"><span class="section-number-3">4.3</span> Moskowitz and Grinblatt (1999) Industry Codes</h3>
+<div class="outline-text-3" id="text-4-3">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">assign_mg1999_industries</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(file_name = <span style="color: #00ffff;">"demo"</span>) 
+{
+
+
+  industry_dictionaries       <span style="color: #0000ff;">&lt;-</span> load_industry_dictionaries()
+  dict                        <span style="color: #0000ff;">&lt;-</span> industry_dictionaries[[3]]
+
+
+  <span style="color: #ff0000;">if</span> (file_name == <span style="color: #00ffff;">"demo"</span>) {
+    FILE      <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"crsp_monthly_data.csv"</span>
+    data      <span style="color: #0000ff;">&lt;-</span> read.csv(FILE, 
+                            nrows = 10000,
+                            stringsAsFactors = <span style="color: #ffff00;">FALSE</span>
+                            )
+    data      <span style="color: #0000ff;">&lt;-</span> data[, c(<span style="color: #00ffff;">"PERMNO"</span>,<span style="color: #00ffff;">"SICCD"</span>)]
+    data      <span style="color: #0000ff;">&lt;-</span> data[is.na(data$SICCD) == <span style="color: #ffff00;">FALSE</span>, ]
+    print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+  } <span style="color: #ff0000;">else</span> {
+    load(file_name)
+    FILE              <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"crsp_monthly_data.csv"</span>
+    data              <span style="color: #0000ff;">&lt;-</span> read.csv(FILE, 
+                                  stringsAsFactors = <span style="color: #ffff00;">FALSE</span>
+                                  )
+    data              <span style="color: #0000ff;">&lt;-</span> data[, c(<span style="color: #00ffff;">"PERMNO"</span>,<span style="color: #00ffff;">"SICCD"</span>)]    
+    data              <span style="color: #0000ff;">&lt;-</span> data[is.na(data$SICCD) == <span style="color: #ffff00;">FALSE</span>, ]
+    data              <span style="color: #0000ff;">&lt;-</span> ddply(data, 
+                               c(<span style="color: #00ffff;">"PERMNO"</span>), 
+                               <span style="color: #ff0000;">function</span>(X)X$SICCD[1]
+                               )
+    names(data)       <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"a"</span>, <span style="color: #00ffff;">"sic"</span>)
+    data              <span style="color: #0000ff;">&lt;-</span> data[data$a %<span style="color: #ff0000;">in</span>% unique(data.is_bal$a), ]
+    print_df_summary(data, <span style="color: #00ffff;">"data"</span>)  
+  }
+
+
+  data.mg1999         <span style="color: #0000ff;">&lt;-</span> data
+  data.mg1999$ind     <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">"Other"</span>
+  print_df_summary(data.mg1999, <span style="color: #00ffff;">"data.mg1999"</span>)
+
+
+  <span style="color: #ff0000;">for</span> (i <span style="color: #ff0000;">in</span> 1:length(dict)) {
+    a <span style="color: #0000ff;">&lt;-</span> dict[[i]]$start
+    b <span style="color: #0000ff;">&lt;-</span> dict[[i]]$end
+    try({ 
+      data.mg1999[data.mg1999$sic %<span style="color: #ff0000;">in</span>% seq(a,b), ]$ind <span style="color: #0000ff;">&lt;-</span> names(dict)[i] 
+    }, silent = <span style="color: #ffff00;">TRUE</span>)
+  }
+  print_df_summary(data.mg1999, <span style="color: #00ffff;">"data.mg1999"</span>)
+
+
+  <span style="color: #ff0000;">if</span> (file_name == <span style="color: #00ffff;">"demo"</span>) {
+    print(data.mg1999[1:250,])
+    save(data.mg1999, 
+         file = <span style="color: #00ffff;">"mg1999_industry_dict_demo.Rdata"</span>
+         )
+  } <span style="color: #ff0000;">else</span> {
+    print(data.mg1999[1:250,])
+    save(data.mg1999, 
+         file = <span style="color: #00ffff;">"mg1999_industry_dict.Rdata"</span>
+         )
+  }
+
+
+}
+</pre>
+
+
+
+
+
+
+</div>
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2011-11-21 20:47:12 EST</p>
+<p class="author">Author: Alex Chinco</p>
+<p class="creator">Org version 7.7 with Emacs version 23</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
+</div>
+</body>
+</html>

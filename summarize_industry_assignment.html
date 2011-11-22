@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="en" xml:lang="en">
+<head>
+<title>Summarize Industry Assignment</title>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2011-11-21 20:46:50 EST"/>
+<meta name="author" content="Alex Chinco"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">Summarize Industry Assignment</h1>
+
+
+
+
+
+
+
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+
+
+
+</div>
+
+<div id="outline-container-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> Main Function Call</h3>
+<div class="outline-text-3" id="text-1-1">
+
+
+
+
+
+<pre class="src src-R">rm(list=ls())
+
+
+<span style="color: #0000ff;">library</span>(foreign)
+<span style="color: #0000ff;">library</span>(reshape)
+<span style="color: #0000ff;">library</span>(plyr)
+<span style="color: #0000ff;">library</span>(matlab)
+<span style="color: #0000ff;">library</span>(rjson)
+
+
+<span style="color: #0000ff;">library</span>(RColorBrewer)
+<span style="color: #0000ff;">library</span>(ggplot2)
+<span style="color: #0000ff;">library</span>(tikzDevice)
+<span style="color: #0000ff;">library</span>(classInt)
+
+
+<span style="color: #0000ff;">source</span>(<span style="color: #00ffff;">"summarize_industry_assignment.R"</span>)    
+<span style="color: #ff1493;">## </span><span style="color: #ff1493;">plot_number_of_firms()</span>
+<span style="color: #ff1493;">## </span><span style="color: #ff1493;">plot_number_of_firms_per_industry(industry_classification = "mg1999")</span>
+<span style="color: #ff1493;">## </span><span style="color: #ff1493;">plot_number_of_firms_per_industry(industry_classification = "ff1988")</span>
+<span style="color: #ff1493;">## </span><span style="color: #ff1493;">plot_number_of_firms_per_sub_industry()</span>
+<span style="color: #ff1493;">## </span><span style="color: #ff1493;">plot_distribution_of_excess_returns_by_industry(industry_classification = "mg1999")</span>
+<span style="color: #ff1493;">## </span><span style="color: #ff1493;">plot_distribution_of_excess_returns_by_industry(industry_classification = "ff1988")</span>
+<span style="color: #ff1493;">## </span><span style="color: #ff1493;">plot_market_cap_by_industry(industry_classification = "mg1999")</span>
+plot_market_cap_by_industry(industry_classification = <span style="color: #00ffff;">"ff1988"</span>)
+</pre>
+
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Helper Functions</h2>
+<div class="outline-text-2" id="text-2">
+
+
+
+</div>
+
+<div id="outline-container-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Print Data Frame Summaries</h3>
+<div class="outline-text-3" id="text-2-1">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">print_df_summary</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(data, 
+                             text
+                             ) 
+{
+
+
+  <span style="color: #ff0000;">for</span> (i <span style="color: #ff0000;">in</span> 1:10) {
+    print(<span style="color: #00ffff;">"                                                  "</span>)
+  }
+  <span style="color: #ff0000;">for</span> (i <span style="color: #ff0000;">in</span> 1:3) {
+    print(<span style="color: #00ffff;">"=================================================="</span>)
+  }
+
+
+  print(text)
+  print(dim(data))
+  print(head(data))
+  print(summary(data))
+
+
+  <span style="color: #ff0000;">for</span> (i <span style="color: #ff0000;">in</span> 1:3) {
+    print(<span style="color: #00ffff;">"=================================================="</span>)
+  }
+
+
+}
+</pre>
+
+
+
+
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Plot Number of Firms</h2>
+<div class="outline-text-2" id="text-3">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">plot_number_of_firms</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>() 
+{
+
+
+  load(<span style="color: #00ffff;">"stock_data_rp1_hp1_1988to2010.Rdata"</span>)
+  load(<span style="color: #00ffff;">"market_data_1988to2010.Rdata"</span>)
+
+
+  data <span style="color: #0000ff;">&lt;-</span> merge(data.r, data.mcap, by = c(<span style="color: #00ffff;">"n"</span>, <span style="color: #00ffff;">"a"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> merge(data, data.is_bal, by = c(<span style="color: #00ffff;">"n"</span>, <span style="color: #00ffff;">"a"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> merge(data, data.rf, by = c(<span style="color: #00ffff;">"n"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> data[data$is_bal == 1, ]
+  print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+  print(length(unique(data$a)))
+
+
+  data.plot           <span style="color: #0000ff;">&lt;-</span> ddply(data,
+                               c(<span style="color: #00ffff;">"t"</span>),
+                               <span style="color: #ff0000;">function</span>(X)dim(X)[1]
+                               )
+  names(data.plot)    <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"t"</span>, <span style="color: #00ffff;">"Number of Firms"</span>)
+  data.plot           <span style="color: #0000ff;">&lt;-</span> melt(data.plot, c(<span style="color: #00ffff;">"t"</span>))
+
+
+  RAW_FILE <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">'plot_number_of_firms'</span>
+  TEX_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.tex'</span>,sep=<span style="color: #00ffff;">''</span>)
+  PDF_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.pdf'</span>,sep=<span style="color: #00ffff;">''</span>)
+  PNG_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.png'</span>,sep=<span style="color: #00ffff;">''</span>)
+
+
+  tikz(file = TEX_FILE, height = 5, width = 9, standAlone=<span style="color: #ffff00;">TRUE</span>)
+  p <span style="color: #0000ff;">&lt;-</span> ggplot(data.plot)
+  p <span style="color: #0000ff;">&lt;-</span> p + geom_path(aes(x            = t, 
+                         y            = value,
+                         colour       = variable
+                         ),
+                     linetype = 1,
+                     size     = 2
+                     )
+  p <span style="color: #0000ff;">&lt;-</span> p + facet_wrap(~variable, ncol = 1, scale = <span style="color: #00ffff;">"free_y"</span>)
+  p <span style="color: #0000ff;">&lt;-</span> p + ylab(<span style="color: #00ffff;">''</span>) + xlab(<span style="color: #00ffff;">'$t$'</span>)
+  p <span style="color: #0000ff;">&lt;-</span> p + opts(legend.position = <span style="color: #00ffff;">"none"</span>)
+  print(p)
+  dev.off()
+
+
+  tools::texi2dvi(TEX_FILE, pdf = <span style="color: #ffff00;">TRUE</span>)
+  OS <span style="color: #0000ff;">&lt;-</span> Sys.info()[<span style="color: #00ffff;">"sysname"</span>]
+  <span style="color: #ff0000;">if</span> (OS == <span style="color: #00ffff;">"Linux"</span>) {
+    system(paste(<span style="color: #00ffff;">'convert -density 450 '</span>, file.path(PDF_FILE), <span style="color: #00ffff;">' '</span>, file.path(PNG_FILE)))
+  } <span style="color: #ff0000;">else</span> <span style="color: #ff0000;">if</span> (OS == <span style="color: #00ffff;">"Darwin"</span>) {
+    system(paste(<span style="color: #00ffff;">'sips -s format png'</span>, file.path(PDF_FILE), <span style="color: #00ffff;">'--out'</span>, file.path(PNG_FILE)))
+  }
+
+
+}
+</pre>
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Plot Number of Firms per Industry</h2>
+<div class="outline-text-2" id="text-4">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">plot_number_of_firms_per_industry</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(industry_classification = <span style="color: #00ffff;">"mg1999"</span>) 
+{
+
+
+  load(<span style="color: #00ffff;">"stock_data_rp1_hp1_1988to2010.Rdata"</span>)
+  load(<span style="color: #00ffff;">"market_data_1988to2010.Rdata"</span>)
+
+
+  data <span style="color: #0000ff;">&lt;-</span> merge(data.r, data.mcap, by = c(<span style="color: #00ffff;">"n"</span>, <span style="color: #00ffff;">"a"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> merge(data, data.is_bal, by = c(<span style="color: #00ffff;">"n"</span>, <span style="color: #00ffff;">"a"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> merge(data, data.rf, by = c(<span style="color: #00ffff;">"n"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> data[data$is_bal == 1, ]
+  print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+  print(length(unique(data$a)))
+
+
+  <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"mg1999"</span>) {
+    load(<span style="color: #00ffff;">"mg1999_industry_dict.Rdata"</span>)
+    data <span style="color: #0000ff;">&lt;-</span> merge(data, data.mg1999, by = c(<span style="color: #00ffff;">"a"</span>))
+  } <span style="color: #ff0000;">else</span> <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"ff1988"</span>) {
+    load(<span style="color: #00ffff;">"ff1988_industry_dict.Rdata"</span>)
+    data <span style="color: #0000ff;">&lt;-</span> merge(data, data.ff1988, by = c(<span style="color: #00ffff;">"a"</span>))
+  } <span style="color: #ff0000;">else</span> <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"msci"</span>) {
+    load(<span style="color: #00ffff;">"msci_industry_dict.Rdata"</span>)
+    data <span style="color: #0000ff;">&lt;-</span> merge(data, data.msci, by = c(<span style="color: #00ffff;">"a"</span>,<span style="color: #00ffff;">"t"</span>))
+  }
+  print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+  print(length(unique(data$a)))
+
+
+  data.plot           <span style="color: #0000ff;">&lt;-</span> ddply(data,
+                               c(<span style="color: #00ffff;">"t"</span>, <span style="color: #00ffff;">"ind"</span>),
+                               <span style="color: #ff0000;">function</span>(X)dim(X)[1]
+                               )
+  names(data.plot)    <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"t"</span>, <span style="color: #00ffff;">"ind"</span>, <span style="color: #00ffff;">"value"</span>)
+  data.plot           <span style="color: #0000ff;">&lt;-</span> data.plot[data.plot$ind != <span style="color: #00ffff;">"Other"</span>, ]
+
+
+  RAW_FILE <span style="color: #0000ff;">&lt;-</span> paste(<span style="color: #00ffff;">'plot_number_of_firms_per_industry_'</span>, industry_classification, sep = <span style="color: #00ffff;">''</span>)
+  TEX_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.tex'</span>,sep=<span style="color: #00ffff;">''</span>)
+  PDF_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.pdf'</span>,sep=<span style="color: #00ffff;">''</span>)
+  PNG_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.png'</span>,sep=<span style="color: #00ffff;">''</span>)
+
+
+  <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"mg1999"</span>) {
+    png(file = PNG_FILE, height = 1200, width = 2500)
+  } <span style="color: #ff0000;">else</span> {
+    png(file = PNG_FILE, height = 1500, width = 2700)
+  }
+  p <span style="color: #0000ff;">&lt;-</span> ggplot(data.plot)
+  p <span style="color: #0000ff;">&lt;-</span> p + geom_path(aes(x            = t, 
+                         y            = value,
+                         colour       = ind
+                         ),
+                     linetype = 1,
+                     size     = 1
+                     )
+  <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"mg1999"</span>) {
+    p <span style="color: #0000ff;">&lt;-</span> p + facet_wrap(~ind, ncol = 5, scale = <span style="color: #00ffff;">"free_y"</span>)
+  } <span style="color: #ff0000;">else</span> {
+    p <span style="color: #0000ff;">&lt;-</span> p + facet_wrap(~ind, ncol = 8, scale = <span style="color: #00ffff;">"free_y"</span>)
+  }
+  p <span style="color: #0000ff;">&lt;-</span> p + ylab(<span style="color: #00ffff;">''</span>) + xlab(<span style="color: #00ffff;">'t'</span>)
+  p <span style="color: #0000ff;">&lt;-</span> p + opts(legend.position = <span style="color: #00ffff;">"none"</span>)
+  print(p)
+  dev.off()
+
+
+}
+</pre>
+
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">plot_number_of_firms_per_sub_industry</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>() 
+{
+
+
+  load(<span style="color: #00ffff;">"stock_data_rp1_hp1_1988to2010.Rdata"</span>)
+  load(<span style="color: #00ffff;">"market_data_1988to2010.Rdata"</span>)
+
+
+  data <span style="color: #0000ff;">&lt;-</span> merge(data.r, data.mcap, by = c(<span style="color: #00ffff;">"n"</span>, <span style="color: #00ffff;">"a"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> merge(data, data.is_bal, by = c(<span style="color: #00ffff;">"n"</span>, <span style="color: #00ffff;">"a"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> merge(data, data.rf, by = c(<span style="color: #00ffff;">"n"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> data[data$is_bal == 1, ]
+  print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+  print(length(unique(data$a)))
+
+
+  load(<span style="color: #00ffff;">"ff1988_industry_dict.Rdata"</span>)
+  data <span style="color: #0000ff;">&lt;-</span> merge(data, data.ff1988, by = c(<span style="color: #00ffff;">"a"</span>))
+  print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+  print(length(unique(data$a)))
+
+
+  data.plot           <span style="color: #0000ff;">&lt;-</span> ddply(data,
+                               c(<span style="color: #00ffff;">"t"</span>, <span style="color: #00ffff;">"ind"</span>, <span style="color: #00ffff;">"sub_ind"</span>),
+                               <span style="color: #ff0000;">function</span>(X)dim(X)[1]
+                               )
+  names(data.plot)    <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"t"</span>, <span style="color: #00ffff;">"ind"</span>, <span style="color: #00ffff;">"sub_ind"</span>, <span style="color: #00ffff;">"value"</span>)
+  data.plot           <span style="color: #0000ff;">&lt;-</span> data.plot[data.plot$ind != <span style="color: #00ffff;">"Other"</span>, ]
+
+
+  RAW_FILE <span style="color: #0000ff;">&lt;-</span> <span style="color: #00ffff;">'plot_number_of_firms_per_sub_industry_ff1988'</span>
+  TEX_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.tex'</span>,sep=<span style="color: #00ffff;">''</span>)
+  PDF_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.pdf'</span>,sep=<span style="color: #00ffff;">''</span>)
+  PNG_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.png'</span>,sep=<span style="color: #00ffff;">''</span>)
+
+
+  png(file = PNG_FILE, height = 1500, width = 2700)
+  p <span style="color: #0000ff;">&lt;-</span> ggplot(data.plot)
+  p <span style="color: #0000ff;">&lt;-</span> p + geom_path(aes(x            = t, 
+                         y            = value,
+                         colour       = ind,
+                         group        = sub_ind
+                         ),
+                     linetype = 1,
+                     size     = 1
+                     )
+  p <span style="color: #0000ff;">&lt;-</span> p + facet_wrap(~ind, ncol = 8, scale = <span style="color: #00ffff;">"free_y"</span>)
+  p <span style="color: #0000ff;">&lt;-</span> p + ylab(<span style="color: #00ffff;">''</span>) + xlab(<span style="color: #00ffff;">'$t$'</span>)
+  p <span style="color: #0000ff;">&lt;-</span> p + opts(legend.position = <span style="color: #00ffff;">"none"</span>)
+  print(p)
+  dev.off()
+
+
+}
+</pre>
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Plot Distribution of Excess Returns by Industry</h2>
+<div class="outline-text-2" id="text-5">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">plot_distribution_of_excess_returns_by_industry</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(industry_classification = <span style="color: #00ffff;">"mg1999"</span>) 
+{
+
+
+  load(<span style="color: #00ffff;">"stock_data_rp1_hp1_1988to2010.Rdata"</span>)
+  load(<span style="color: #00ffff;">"market_data_1988to2010.Rdata"</span>)
+
+
+  data <span style="color: #0000ff;">&lt;-</span> merge(data.r, data.mcap, by = c(<span style="color: #00ffff;">"n"</span>, <span style="color: #00ffff;">"a"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> merge(data, data.is_bal, by = c(<span style="color: #00ffff;">"n"</span>, <span style="color: #00ffff;">"a"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> merge(data, data.rf, by = c(<span style="color: #00ffff;">"n"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> data[data$is_bal == 1, ]
+  print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+  print(length(unique(data$a)))
+
+
+  <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"mg1999"</span>) {
+    load(<span style="color: #00ffff;">"mg1999_industry_dict.Rdata"</span>)
+    data <span style="color: #0000ff;">&lt;-</span> merge(data, data.mg1999, by = c(<span style="color: #00ffff;">"a"</span>))
+  } <span style="color: #ff0000;">else</span> <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"ff1988"</span>) {
+    load(<span style="color: #00ffff;">"ff1988_industry_dict.Rdata"</span>)
+    data <span style="color: #0000ff;">&lt;-</span> merge(data, data.ff1988, by = c(<span style="color: #00ffff;">"a"</span>))
+  } <span style="color: #ff0000;">else</span> <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"msci"</span>) {
+    load(<span style="color: #00ffff;">"msci_industry_dict.Rdata"</span>)
+    data <span style="color: #0000ff;">&lt;-</span> merge(data, data.msci, by = c(<span style="color: #00ffff;">"a"</span>,<span style="color: #00ffff;">"t"</span>))
+  }
+  print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+  print(length(unique(data$a)))
+
+
+  data$y              <span style="color: #0000ff;">&lt;-</span> floor(data$t)
+  data.plot           <span style="color: #0000ff;">&lt;-</span> ddply(data,
+                               c(<span style="color: #00ffff;">"y"</span>, <span style="color: #00ffff;">"a"</span>, <span style="color: #00ffff;">"ind"</span>),
+                               <span style="color: #ff0000;">function</span>(X)mean(X$r, na.rm = <span style="color: #ffff00;">TRUE</span>)
+                               )
+  names(data.plot)    <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"y"</span>, <span style="color: #00ffff;">"a"</span>, <span style="color: #00ffff;">"ind"</span>, <span style="color: #00ffff;">"r"</span>)
+  data.plot           <span style="color: #0000ff;">&lt;-</span> data.plot[data.plot$ind != <span style="color: #00ffff;">"Other"</span>, ]
+  print_df_summary(data.plot, <span style="color: #00ffff;">"data.plot"</span>)
+
+
+  RAW_FILE <span style="color: #0000ff;">&lt;-</span> paste(<span style="color: #00ffff;">'plot_distribution_of_excess_returns_by_industry_'</span>, industry_classification, sep = <span style="color: #00ffff;">''</span>)
+  TEX_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.tex'</span>,sep=<span style="color: #00ffff;">''</span>)
+  PDF_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.pdf'</span>,sep=<span style="color: #00ffff;">''</span>)
+  PNG_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.png'</span>,sep=<span style="color: #00ffff;">''</span>)
+
+
+  <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"mg1999"</span>) {
+    png(file = PNG_FILE, height = 1200, width = 2500)
+  } <span style="color: #ff0000;">else</span> {
+    png(file = PNG_FILE, height = 1500, width = 2700)
+  }
+  <span style="color: #7f007f;">stat_sum_single</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(fun, geom = <span style="color: #00ffff;">"point"</span>, ...) {
+    stat_summary(fun.y        = fun, 
+                 colour       = <span style="color: #00ffff;">"red"</span>, 
+                 geom         = geom, 
+                 size         = 3,
+                 ...
+                 ) 
+  } 
+  p <span style="color: #0000ff;">&lt;-</span> ggplot(data.plot,
+              aes(x           = y,
+                  y           = r,
+                  group       = y,
+                  colour      = ind
+                  )
+              )
+  p <span style="color: #0000ff;">&lt;-</span> p + geom_boxplot()
+  p <span style="color: #0000ff;">&lt;-</span> p + stat_sum_single(mean)
+  <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"mg1999"</span>) {
+    p <span style="color: #0000ff;">&lt;-</span> p + facet_wrap(~ind, ncol = 5, scale = <span style="color: #00ffff;">"free_y"</span>)
+  } <span style="color: #ff0000;">else</span> {
+    p <span style="color: #0000ff;">&lt;-</span> p + facet_wrap(~ind, ncol = 8, scale = <span style="color: #00ffff;">"free_y"</span>)
+  }
+  p <span style="color: #0000ff;">&lt;-</span> p + ylab(<span style="color: #00ffff;">''</span>) + xlab(<span style="color: #00ffff;">'y'</span>)
+  p <span style="color: #0000ff;">&lt;-</span> p + opts(legend.position = <span style="color: #00ffff;">"none"</span>)
+  print(p)
+  dev.off()
+
+
+}
+</pre>
+
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6"><span class="section-number-2">6</span> Plot Market Cap by Industry</h2>
+<div class="outline-text-2" id="text-6">
+
+
+
+
+
+<pre class="src src-R"><span style="color: #7f007f;">plot_market_cap_by_industry</span> <span style="color: #0000ff;">&lt;-</span> <span style="color: #ff0000;">function</span>(industry_classification = <span style="color: #00ffff;">"mg1999"</span>) 
+{
+
+
+  load(<span style="color: #00ffff;">"stock_data_rp1_hp1_1988to2010.Rdata"</span>)
+  load(<span style="color: #00ffff;">"market_data_1988to2010.Rdata"</span>)
+
+
+  data <span style="color: #0000ff;">&lt;-</span> merge(data.r, data.mcap, by = c(<span style="color: #00ffff;">"n"</span>, <span style="color: #00ffff;">"a"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> merge(data, data.is_bal, by = c(<span style="color: #00ffff;">"n"</span>, <span style="color: #00ffff;">"a"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> merge(data, data.rf, by = c(<span style="color: #00ffff;">"n"</span>))
+  data <span style="color: #0000ff;">&lt;-</span> data[data$is_bal == 1, ]
+  print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+  print(length(unique(data$a)))
+
+
+  <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"mg1999"</span>) {
+    load(<span style="color: #00ffff;">"mg1999_industry_dict.Rdata"</span>)
+    data <span style="color: #0000ff;">&lt;-</span> merge(data, data.mg1999, by = c(<span style="color: #00ffff;">"a"</span>))
+  } <span style="color: #ff0000;">else</span> <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"ff1988"</span>) {
+    load(<span style="color: #00ffff;">"ff1988_industry_dict.Rdata"</span>)
+    data <span style="color: #0000ff;">&lt;-</span> merge(data, data.ff1988, by = c(<span style="color: #00ffff;">"a"</span>))
+  } <span style="color: #ff0000;">else</span> <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"msci"</span>) {
+    load(<span style="color: #00ffff;">"msci_industry_dict.Rdata"</span>)
+    data <span style="color: #0000ff;">&lt;-</span> merge(data, data.msci, by = c(<span style="color: #00ffff;">"a"</span>,<span style="color: #00ffff;">"t"</span>))
+  }
+  print_df_summary(data, <span style="color: #00ffff;">"data"</span>)
+  print(length(unique(data$a)))
+
+
+  data.plot           <span style="color: #0000ff;">&lt;-</span> ddply(data,
+                               c(<span style="color: #00ffff;">"t"</span>, <span style="color: #00ffff;">"ind"</span>),
+                               <span style="color: #ff0000;">function</span>(X)sum(X$mcap, na.rm = <span style="color: #ffff00;">TRUE</span>)
+                               )
+  names(data.plot)    <span style="color: #0000ff;">&lt;-</span> c(<span style="color: #00ffff;">"t"</span>, <span style="color: #00ffff;">"ind"</span>, <span style="color: #00ffff;">"mcap"</span>)
+  data.plot           <span style="color: #0000ff;">&lt;-</span> data.plot[data.plot$ind != <span style="color: #00ffff;">"Other"</span>, ]
+  print_df_summary(data.plot, <span style="color: #00ffff;">"data.plot"</span>)
+
+
+  RAW_FILE <span style="color: #0000ff;">&lt;-</span> paste(<span style="color: #00ffff;">'plot_market_cap_by_industry_'</span>, industry_classification, sep = <span style="color: #00ffff;">''</span>)
+  TEX_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.tex'</span>,sep=<span style="color: #00ffff;">''</span>)
+  PDF_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.pdf'</span>,sep=<span style="color: #00ffff;">''</span>)
+  PNG_FILE <span style="color: #0000ff;">&lt;-</span> paste(RAW_FILE,<span style="color: #00ffff;">'.png'</span>,sep=<span style="color: #00ffff;">''</span>)
+
+
+  <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"mg1999"</span>) {
+    png(file = PNG_FILE, height = 1200, width = 2500)
+  } <span style="color: #ff0000;">else</span> {
+    png(file = PNG_FILE, height = 1500, width = 2700)
+  }
+  p <span style="color: #0000ff;">&lt;-</span> ggplot(data.plot,
+              aes(x           = t,
+                  y           = mcap,
+                  group       = ind,
+                  colour      = ind
+                  )
+              )
+  p <span style="color: #0000ff;">&lt;-</span> p + geom_path(size = 2)
+  <span style="color: #ff0000;">if</span> (industry_classification == <span style="color: #00ffff;">"mg1999"</span>) {
+    p <span style="color: #0000ff;">&lt;-</span> p + facet_wrap(~ind, ncol = 5, scale = <span style="color: #00ffff;">"free_y"</span>)
+  } <span style="color: #ff0000;">else</span> {
+    p <span style="color: #0000ff;">&lt;-</span> p + facet_wrap(~ind, ncol = 8, scale = <span style="color: #00ffff;">"free_y"</span>)
+  }
+  p <span style="color: #0000ff;">&lt;-</span> p + ylab(<span style="color: #00ffff;">''</span>) + xlab(<span style="color: #00ffff;">'t'</span>)
+  p <span style="color: #0000ff;">&lt;-</span> p + opts(legend.position = <span style="color: #00ffff;">"none"</span>)
+  print(p)
+  dev.off()
+
+
+}
+</pre>
+
+
+</div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2011-11-21 20:46:50 EST</p>
+<p class="author">Author: Alex Chinco</p>
+<p class="creator">Org version 7.7 with Emacs version 23</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
+</div>
+</body>
+</html>
